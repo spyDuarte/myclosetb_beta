@@ -1,0 +1,191 @@
+1:﻿import { useCallback, useEffect, useMemo, useState } from "react";
+2:import { supabase } from "@/integrations/supabase/client";
+3:import { useToast } from "@/hooks/use-toast";
+4:import { Button } from "./ui/button";
+5:import { Card } from "./ui/card";
+6:import { Badge } from "./ui/badge";
+7:import { Skeleton } from "./ui/skeleton";
+8:import { Input } from "./ui/input";
+9:import { Switch } from "./ui/switch";
+10:import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
+11:import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+12:import { format } from "date-fns";
+13:import { ptBR } from "date-fns/locale";
+14:import { Eye, ShoppingBag, Trash2, CheckCircle2, RefreshCcw, PlusCircle, CreditCard } from "lucide-react";
+15:import { CreateListingModal } from "./modals/CreateListingModal";
+16:import { PurchaseListingModal } from "./modals/PurchaseListingModal";
+35:  status: "available" | "reserved" | "sold";
+41:const priceFormatter = new Intl.NumberFormat("pt-BR", {
+42:  style: "currency",
+43:  currency: "BRL",
+46:const statusLabels: Record<MarketplaceListing["status"], string> = {
+47:  available: "Disponível",
+48:  reserved: "Reservado",
+49:  sold: "Vendido",
+56:  const [filter, setFilter] = useState<"available" | "reserved" | "sold" | "all">("available");
+63:  const [searchQuery, setSearchQuery] = useState("");
+64:  const [minPrice, setMinPrice] = useState("");
+65:  const [maxPrice, setMaxPrice] = useState("");
+81:        .from("marketplace_listings")
+104:        .order("created_at", { ascending: false });
+112:          status: (row.status ?? "available") as MarketplaceListing["status"],
+118:        title: "Erro ao carregar marketplace",
+120:        variant: "destructive",
+131:    const availableListings = listings.filter((listing) => listing.status === "available");
+132:    const reservedListings = listings.filter((listing) => listing.status === "reserved");
+133:    const soldListings = listings.filter((listing) => listing.status === "sold");
+158:      .channel("marketplace_listings_changes")
+160:        "postgres_changes",
+161:        { event: "*", schema: "public", table: "marketplace_listings" },
+185:        .from("wardrobe_items")
+186:        .select("id, name, category, color, season, image_url")
+187:        .order("created_at", { ascending: false });
+193:        title: "Erro ao listar peças",
+195:        variant: "destructive",
+204:      const confirmDelete = window.confirm("Deseja remover este anúncio?");
+208:        .from("marketplace_listings")
+210:        .eq("id", listingId);
+215:        title: "Anúncio removido",
+216:        description: "A peça não está mais visível no marketplace.",
+220:        title: "Erro ao remover anúncio",
+222:        variant: "destructive",
+227:  const handleMarkSold = async (listingId: string, nextStatus: MarketplaceListing["status"]) => {
+230:        .from("marketplace_listings")
+232:        .eq("id", listingId);
+237:        nextStatus === "reserved"
+238:          ? "Reserva realizada!"
+239:          : nextStatus === "available"
+240:            ? "Disponível novamente."
+241:            : "Marcada como vendida!";
+244:        title: "Status atualizado",
+249:        title: "Erro ao atualizar status",
+251:        variant: "destructive",
+258:    const min = parseFloat(minPrice.replace(",", "."));
+259:    const max = parseFloat(maxPrice.replace(",", "."));
+260:    const hasMin = minPrice.trim() !== "" && !Number.isNaN(min);
+261:    const hasMax = maxPrice.trim() !== "" && !Number.isNaN(max);
+264:      if (filter !== "all" && listing.status !== filter) return false;
+286:          .join(" ")
+308:      filter !== "available" ||
+309:      searchQuery.trim() !== "" ||
+310:      minPrice.trim() !== "" ||
+311:      maxPrice.trim() !== "" ||
+319:        return "Faça login para ver e gerenciar seus anúncios.";
+322:        return "Você ainda não publicou nenhuma oferta. Crie a primeira agora mesmo.";
+327:      return "Nenhum anúncio corresponde aos filtros selecionados.";
+330:    return "Que tal ser o primeiro? Anuncie uma peça do seu guarda-roupa e comece a vender.";
+334:    setSearchQuery("");
+335:    setMinPrice("");
+336:    setMaxPrice("");
+338:    setFilter("available");
+355:    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+357:        <Card key={index} className="p-4">
+358:          <Skeleton className="h-40 w-full" />
+359:          <div className="mt-4 space-y-2">
+360:            <Skeleton className="h-4 w-3/4" />
+361:            <Skeleton className="h-3 w-1/2" />
+362:            <Skeleton className="h-3 w-2/3" />
+370:    <div className="rounded-lg border border-dashed p-12 text-center">
+371:      <ShoppingBag className="mx-auto h-12 w-12 text-muted-foreground" />
+372:      <h3 className="mt-4 text-lg font-semibold">Nenhum anúncio encontrado</h3>
+373:      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+374:      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-center">
+376:          <Button variant="outline" onClick={resetFilters}>
+381:          <PlusCircle className="mr-2 h-4 w-4" />
+394:    <div className="space-y-6">
+395:      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+397:          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+400:          <p className="text-muted-foreground">
+404:        <div className="flex gap-2">
+405:          <Button variant="outline" onClick={handleRefresh} disabled={refreshing || loading}>
+406:            <RefreshCcw className="mr-2 h-4 w-4" />
+410:            <PlusCircle className="mr-2 h-4 w-4" />
+416:      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+418:          <div className="p-4">
+419:            <p className="text-sm text-muted-foreground">Anúncios cadastrados</p>
+420:            <p className="text-2xl font-semibold">{stats.total}</p>
+424:          <div className="p-4">
+425:            <p className="text-sm text-muted-foreground">Disponíveis</p>
+426:            <p className="text-2xl font-semibold">{stats.available}</p>
+427:            <p className="text-xs text-muted-foreground mt-1">
+433:          <div className="p-4">
+434:            <p className="text-sm text-muted-foreground">Reservados</p>
+435:            <p className="text-2xl font-semibold">{stats.reserved}</p>
+436:            <p className="text-xs text-muted-foreground mt-1">
+442:          <div className="p-4">
+443:            <p className="text-sm text-muted-foreground">Meus anúncios</p>
+444:            <p className="text-2xl font-semibold">{stats.mine}</p>
+449:      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+450:        <div className="flex flex-col gap-3 md:flex-row md:items-center md:flex-1">
+452:            placeholder="Buscar por título, categoria ou cor..."
+455:            className="w-full md:max-w-sm"
+457:          <div className="flex flex-col gap-3 sm:flex-row">
+459:              type="number"
+460:              inputMode="decimal"
+461:              placeholder="Preço mín."
+464:              className="w-full sm:w-32"
+467:              type="number"
+468:              inputMode="decimal"
+469:              placeholder="Preço máx."
+472:              className="w-full sm:w-32"
+476:        <div className="flex items-center gap-3">
+478:            id="marketplace-only-mine"
+483:          <div className="flex flex-col">
+485:              htmlFor="marketplace-only-mine"
+486:              className="text-sm font-medium leading-none cursor-pointer"
+491:              <span className="text-xs text-muted-foreground">Disponível após login</span>
+499:          <TabsTrigger value="available">Disponíveis</TabsTrigger>
+500:          <TabsTrigger value="reserved">Reservados</TabsTrigger>
+501:          <TabsTrigger value="sold">Vendidos</TabsTrigger>
+502:          <TabsTrigger value="all">Todos</TabsTrigger>
+511:        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+517:              <Card key={listing.id} className="overflow-hidden">
+518:                <div className="relative h-48 bg-muted">
+523:                      className="h-full w-full object-cover"
+526:                    <div className="flex h-full items-center justify-center text-6xl">
+530:                  <Badge className="absolute left-4 top-4">
+535:                <div className="space-y-4 p-4">
+537:                    <h3 className="text-lg font-semibold leading-tight">
+540:                    <p className="text-sm text-muted-foreground">
+541:                      {format(new Date(listing.created_at), "dd 'de' MMMM", {
+548:                    <div className="flex flex-wrap gap-2 text-xs">
+549:                      <Badge variant="secondary">{item.category}</Badge>
+550:                      <Badge variant="outline">{item.color}</Badge>
+551:                      <Badge variant="outline">{item.season}</Badge>
+556:                    <p className="text-sm text-muted-foreground">{listing.description}</p>
+559:                  <div className="flex items-center justify-between">
+560:                    <span className="text-xl font-semibold">
+563:                    <Badge variant="outline">{listing.condition}</Badge>
+566:                  <div className="border-t pt-4 space-y-3">
+567:                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+568:                      <div className="flex items-center gap-3">
+569:                        <Avatar className="h-9 w-9">
+574:                              {listing.owner_email?.slice(0, 2).toUpperCase() ?? "??"}
+578:                        <div className="text-sm">
+579:                          <p className="font-medium">
+580:                            {isOwner ? "Seu anúncio" : listing.owner_email ?? "Anunciante"}
+582:                          <p className="text-xs text-muted-foreground">
+584:                              ? "Gerencie o status da sua oferta."
+585:                              : "Finalize pela plataforma ou fale com o vendedor."}
+591:                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+593:                            size="sm"
+595:                            disabled={listing.status !== "available"}
+597:                            <CreditCard className="mr-2 h-4 w-4" />
+601:                            <Button asChild size="sm" variant="outline">
+603:                                href={`mailto:${listing.owner_email}?subject=Interesse na peça ${listing.title ?? item?.name ?? ""}`}
+605:                                <Eye className="mr-2 h-4 w-4" />
+615:                      <div className="flex flex-wrap gap-2">
+617:                          size="sm"
+618:                          variant={listing.status === "reserved" ? "outline" : "default"}
+622:                              listing.status === "available" ? "reserved" : "available"
+626:                          <CheckCircle2 className="mr-2 h-4 w-4" />
+627:                          {listing.status === "available" ? "Marcar como reservado" : "Voltar para disponível"}
+630:                          size="sm"
+631:                          variant="secondary"
+635:                              listing.status === "sold" ? "available" : "sold"
+639:                          <ShoppingBag className="mr-2 h-4 w-4" />
+640:                          {listing.status === "sold" ? "Anunciar novamente" : "Marcar como vendido"}
+643:                          size="sm"
+644:                          variant="ghost"
+645:                          className="text-destructive hover:text-destructive"
+648:                          <Trash2 className="mr-2 h-4 w-4" />
