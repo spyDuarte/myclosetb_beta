@@ -1,0 +1,1 @@
+export { ClosetService } from './ClosetService';
