@@ -25,17 +25,58 @@ cd myclosetb_beta
 npm install
 ```
 
-## 📖 Uso
+## 📱 App Mobile (iOS/Android)
 
-### Executar a aplicação de demonstração
+Este projeto inclui um aplicativo móvel completo desenvolvido com **React Native e Expo**!
+
+### Executar o App Mobile
 
 ```bash
-# Executar em modo desenvolvimento
-npm run dev
+# Instalar dependências
+npm install
 
-# Ou compilar e executar
-npm run build
+# Iniciar o Expo
 npm start
+
+# Executar no iOS (requer Mac com Xcode)
+npm run ios
+
+# Executar no Android
+npm run android
+
+# Ou escaneie o QR code com o app Expo Go no seu iPhone/Android
+```
+
+### Recursos do App Mobile
+
+- Interface nativa para iOS e Android
+- Navegação por abas (Closet e Estatísticas)
+- Adicionar/editar/excluir itens
+- Marcar itens como favoritos
+- Registrar uso de itens
+- Busca e filtros em tempo real
+- Estatísticas visuais do closet
+- Persistência local com AsyncStorage
+- Design moderno e intuitivo
+
+### Telas do App
+
+1. **Home (Closet)**: Lista de todos os itens com busca e estatísticas rápidas
+2. **Adicionar Item**: Formulário completo para adicionar novos itens
+3. **Detalhes do Item**: Visualização completa com opções de edição
+4. **Estatísticas**: Análise visual do closet com gráficos
+
+## 📖 Uso (Versão CLI)
+
+### Executar a aplicação de demonstração CLI
+
+```bash
+# Executar versão CLI em modo desenvolvimento
+npm run dev:cli
+
+# Ou compilar e executar versão CLI
+npm run build:cli
+npm run start:cli
 ```
 
 ### Executar testes
@@ -89,24 +130,27 @@ console.log(`Valor total: R$ ${stats.totalValue}`);
 
 ```
 myclosetb_beta/
-├── src/
+├── App.tsx              # App principal React Native
+├── app.json             # Configuração Expo
+├── src/                 # Lógica de negócio compartilhada
 │   ├── models/          # Modelos de dados e tipos
-│   │   ├── Category.ts  # Enums de categorias, cores e estações
-│   │   ├── ClosetItem.ts # Interface do item de closet
-│   │   └── index.ts
-│   ├── services/        # Lógica de negócio
-│   │   ├── ClosetService.ts # Serviço principal do closet
-│   │   └── index.ts
+│   ├── services/        # Serviços (ClosetService)
 │   ├── utils/           # Utilitários
-│   │   └── idGenerator.ts
-│   └── index.ts         # Arquivo principal
+│   └── index.ts         # Versão CLI
+├── mobile/              # App Mobile
+│   ├── components/      # Componentes reutilizáveis
+│   │   └── ClosetItemCard.tsx
+│   ├── contexts/        # Context API (estado global)
+│   │   └── ClosetContext.tsx
+│   └── screens/         # Telas do app
+│       ├── HomeScreen.tsx
+│       ├── AddItemScreen.tsx
+│       ├── ItemDetailsScreen.tsx
+│       └── StatsScreen.tsx
 ├── tests/               # Testes unitários
-│   └── ClosetService.test.ts
-├── dist/                # Código compilado
-├── package.json
-├── tsconfig.json
-├── jest.config.js
-└── README.md
+├── assets/              # Imagens e ícones
+├── dist/                # Código compilado (CLI)
+└── package.json
 ```
 
 ## 🧪 Testes
@@ -122,17 +166,41 @@ O projeto possui cobertura de testes para todas as funcionalidades principais:
 
 ## 🛠️ Tecnologias
 
+### Mobile
+- **React Native 0.73** - Framework mobile
+- **Expo 50** - Plataforma de desenvolvimento
+- **React Navigation** - Navegação entre telas
+- **AsyncStorage** - Persistência local
+- **TypeScript** - Tipagem estática
+
+### Backend/CLI
 - **TypeScript** - Linguagem principal
+- **Node.js** - Runtime
+
+### Qualidade de Código
 - **Jest** - Framework de testes
 - **ESLint** - Linting
 - **Prettier** - Formatação de código
 
 ## 📝 Scripts Disponíveis
 
+### App Mobile
 ```bash
-npm run build      # Compilar TypeScript para JavaScript
-npm start          # Executar aplicação compilada
-npm run dev        # Executar em modo desenvolvimento
+npm start          # Iniciar Expo dev server
+npm run ios        # Executar no iOS
+npm run android    # Executar no Android
+npm run web        # Executar no navegador
+```
+
+### Versão CLI
+```bash
+npm run build:cli  # Compilar TypeScript para JavaScript
+npm run start:cli  # Executar aplicação compilada
+npm run dev:cli    # Executar em modo desenvolvimento
+```
+
+### Testes e Qualidade
+```bash
 npm test           # Executar testes
 npm run test:watch # Executar testes em modo watch
 npm run lint       # Executar linter
@@ -141,13 +209,18 @@ npm run format     # Formatar código
 
 ## 🎯 Roadmap
 
-- [ ] Interface web com React/Vue
-- [ ] Persistência de dados (banco de dados)
-- [ ] Upload de fotos de itens
+- [x] App Mobile iOS/Android com React Native
+- [x] Navegação entre telas
+- [x] Persistência local (AsyncStorage)
+- [x] Interface moderna e intuitiva
+- [ ] Upload de fotos de itens (câmera/galeria)
 - [ ] Criador de looks (combinações de roupas)
 - [ ] Calendário de uso
 - [ ] Sugestões baseadas em clima
 - [ ] Compartilhamento de closet com amigos
+- [ ] Backend com API REST
+- [ ] Sincronização na nuvem
+- [ ] Interface web com React
 - [ ] Integração com e-commerce
 
 ## 🤝 Contribuindo
