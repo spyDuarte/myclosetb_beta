@@ -1,0 +1,71 @@
+# Dependências
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ambientes virtuais
+venv/
+env/
+ENV/
+.venv
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+*.egg
+*.o
+*.exe
+*.dll
+*.so
+*.dylib
+out/
+target/
+
+# Ambientes e configuração
+.env
+.env.local
+.env.*.local
+*.log
+logs/
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Cobertura de testes
+coverage/
+*.coverage
+.coverage.*
+.nyc_output/
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Cache e temporários
+*.cache
+.cache/
+tmp/
+temp/
+*.tmp
+.sass-cache/
+.parcel-cache/
+
+# Arquivos do sistema
+Thumbs.db
+Desktop.ini
+.Spotlight-V100
+.Trashes
