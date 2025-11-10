@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,8 +13,11 @@ import { useCloset } from '../contexts/ClosetContext';
 import { ImagePickerButton } from '../components/ImagePickerButton';
 import { Category, Color, Season } from '../../src/models';
 
-export function AddItemScreen({ navigation }: any) {
-  const { addItem } = useCloset();
+export function EditItemScreen({ route, navigation }: any) {
+  const { itemId } = route.params;
+  const { getItemById, updateItem } = useCloset();
+  const item = getItemById(itemId);
+
   const [name, setName] = useState('');
   const [category, setCategory] = useState<Category>(Category.TOPS);
   const [color, setColor] = useState<Color>(Color.WHITE);
@@ -25,6 +28,28 @@ export function AddItemScreen({ navigation }: any) {
   const [imageUrl, setImageUrl] = useState<string | undefined>();
   const [selectedSeasons, setSelectedSeasons] = useState<Season[]>([Season.ALL_SEASONS]);
 
+  useEffect(() => {
+    if (item) {
+      setName(item.name);
+      setCategory(item.category);
+      setColor(item.color);
+      setBrand(item.brand || '');
+      setSize(item.size || '');
+      setPrice(item.price ? item.price.toString() : '');
+      setNotes(item.notes || '');
+      setImageUrl(item.imageUrl);
+      setSelectedSeasons(item.season);
+    }
+  }, [item]);
+
+  if (!item) {
+    return (
+      <View style={styles.centered}>
+        <Text>Item não encontrado</Text>
+      </View>
+    );
+  }
+
   const handleSubmit = async () => {
     if (!name.trim()) {
       Alert.alert('Erro', 'Por favor, digite um nome para o item');
@@ -32,7 +57,7 @@ export function AddItemScreen({ navigation }: any) {
     }
 
     try {
-      await addItem({
+      await updateItem(itemId, {
         name: name.trim(),
         category,
         color,
@@ -44,14 +69,14 @@ export function AddItemScreen({ navigation }: any) {
         notes: notes.trim() || undefined
       });
 
-      Alert.alert('Sucesso', 'Item adicionado ao closet!', [
+      Alert.alert('Sucesso', 'Item atualizado!', [
         {
           text: 'OK',
           onPress: () => navigation.goBack()
         }
       ]);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível adicionar o item');
+      Alert.alert('Erro', 'Não foi possível atualizar o item');
     }
   };
 
@@ -155,7 +180,7 @@ export function AddItemScreen({ navigation }: any) {
         />
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Adicionar Item</Text>
+          <Text style={styles.buttonText}>Salvar Alterações</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -173,6 +198,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5'
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   form: {
     padding: 16

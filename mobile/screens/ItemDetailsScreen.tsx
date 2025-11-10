@@ -4,7 +4,8 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
@@ -46,14 +47,24 @@ export function ItemDetailsScreen({ route, navigation }: any) {
     <>
       <ScrollView style={styles.container}>
         <View style={styles.imageContainer}>
-          <View style={[styles.placeholderImage, { backgroundColor: item.color }]}>
-            <Ionicons name="shirt-outline" size={80} color="#fff" />
-          </View>
+          {item.imageUrl ? (
+            <Image source={{ uri: item.imageUrl }} style={styles.image} />
+          ) : (
+            <View style={[styles.placeholderImage, { backgroundColor: item.color }]}>
+              <Ionicons name="shirt-outline" size={80} color="#fff" />
+            </View>
+          )}
           {item.favorite && (
             <View style={styles.favoriteBadge}>
               <Ionicons name="heart" size={24} color="#ff4444" />
             </View>
           )}
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => navigation.navigate('EditItem', { itemId })}
+          >
+            <Ionicons name="create-outline" size={24} color="#fff" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.content}>
@@ -253,6 +264,11 @@ const styles = StyleSheet.create({
     height: 300,
     position: 'relative'
   },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
+  },
   placeholderImage: {
     width: '100%',
     height: '100%',
@@ -264,6 +280,19 @@ const styles = StyleSheet.create({
     top: 16,
     right: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    padding: 8,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4
+  },
+  editButton: {
+    position: 'absolute',
+    top: 16,
+    left: 16,
+    backgroundColor: 'rgba(0, 122, 255, 0.9)',
     borderRadius: 20,
     padding: 8,
     elevation: 4,
