@@ -6,8 +6,11 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert
+  Alert,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from '@react-native-picker/picker';
 import { useCloset } from '../contexts/ClosetContext';
 import { Category, Color, Season } from '../../src/models';
@@ -53,8 +56,17 @@ export function AddItemScreen({ navigation }: any) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.form}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          style={styles.container}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollContent}
+        >
+          <View style={styles.form}>
         <Text style={styles.label}>Nome do Item *</Text>
         <TextInput
           style={styles.input}
@@ -155,14 +167,25 @@ export function AddItemScreen({ navigation }: any) {
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#f5f5f5'
+  },
+  keyboardView: {
+    flex: 1
+  },
+  container: {
+    flex: 1
+  },
+  scrollContent: {
+    flexGrow: 1
   },
   form: {
     padding: 16
@@ -195,7 +218,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   picker: {
-    height: 50
+    height: Platform.OS === 'ios' ? 180 : 50
   },
   button: {
     backgroundColor: '#007AFF',

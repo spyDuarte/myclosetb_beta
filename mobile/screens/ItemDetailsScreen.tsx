@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 
@@ -47,8 +48,9 @@ export function ItemDetailsScreen({ route, navigation }: any) {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.imageContainer}>
+    <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <ScrollView style={styles.container}>
+        <View style={styles.imageContainer}>
         <View style={[styles.placeholderImage, { backgroundColor: item.color }]}>
           <Ionicons name="shirt-outline" size={80} color="#fff" />
         </View>
@@ -148,7 +150,8 @@ export function ItemDetailsScreen({ route, navigation }: any) {
           <Text style={styles.deleteButtonText}>Excluir Item</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -165,9 +168,12 @@ function InfoRow({ icon, label, value }: { icon: any; label: string; value: stri
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#f5f5f5'
+  },
+  container: {
+    flex: 1
   },
   centered: {
     flex: 1,
