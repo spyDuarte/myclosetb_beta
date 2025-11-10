@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 
@@ -13,8 +14,9 @@ export function StatsScreen() {
   const stats = getStatistics();
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
         <Ionicons name="stats-chart" size={40} color="#007AFF" />
         <Text style={styles.title}>Estatísticas do Closet</Text>
       </View>
@@ -101,7 +103,8 @@ export function StatsScreen() {
           </Text>
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -142,6 +145,10 @@ function getCategoryColor(category: string): string {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff'
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5'
@@ -149,7 +156,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     paddingVertical: 24,
-    paddingTop: 60,
     backgroundColor: '#fff'
   },
   title: {

@@ -47,6 +47,47 @@ npm run android
 # Ou escaneie o QR code com o app Expo Go no seu iPhone/Android
 ```
 
+### 🍎 Configurações Específicas do iOS
+
+O aplicativo está totalmente configurado para funcionar no iOS com:
+
+- ✅ **Bundle Identifier**: `com.spyduarte.mycloset`
+- ✅ **Suporte para iPad e iPhone**
+- ✅ **SafeAreaView** implementado em todas as telas
+- ✅ **Permissões de privacidade** configuradas:
+  - Acesso à câmera para fotos de itens
+  - Acesso à galeria de fotos
+  - Permissão para salvar fotos
+- ✅ **Ícones e Splash Screen** otimizados para iOS
+- ✅ **Build Number** e versão configurados
+
+Para executar no iOS:
+
+1. **Usando Expo Go** (mais fácil):
+   - Instale o app Expo Go da App Store
+   - Execute `npm start`
+   - Escaneie o QR code com a câmera do iPhone
+
+2. **Usando simulador iOS** (requer Mac):
+   - Instale Xcode da App Store
+   - Execute `npm run ios`
+   - O simulador abrirá automaticamente
+
+3. **Build para produção**:
+   ```bash
+   # Instalar EAS CLI
+   npm install -g eas-cli
+
+   # Login no Expo
+   eas login
+
+   # Configurar projeto
+   eas build:configure
+
+   # Build para iOS
+   eas build --platform ios
+   ```
+
 ### Recursos do App Mobile
 
 - Interface nativa para iOS e Android
