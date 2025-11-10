@@ -14,7 +14,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.spyduarte.mycloset",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "O MyCloset precisa acessar suas fotos para adicionar imagens dos seus itens de roupa.",
+        "NSCameraUsageDescription": "O MyCloset precisa acessar sua câmera para tirar fotos dos seus itens de roupa.",
+        "NSPhotoLibraryAddUsageDescription": "O MyCloset precisa salvar fotos na sua biblioteca."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -26,6 +31,10 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "mycloset"
+    "scheme": "mycloset",
+    "platforms": [
+      "ios",
+      "android"
+    ]
   }
 }
