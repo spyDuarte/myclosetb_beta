@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ActivityIndicator,
-  Platform
+  ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 import { ClosetItemCard } from '../components/ClosetItemCard';
-import { Category } from '../../src/models';
+import { Category, ClosetItem } from '../../src/models';
+import { HomeScreenProps } from '../types/navigation';
 
-export function HomeScreen({ navigation }: any) {
+export function HomeScreen({ navigation }: HomeScreenProps) {
   const { items, loading, toggleFavorite, searchItems } = useCloset();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<Category | undefined>();
@@ -23,6 +23,24 @@ export function HomeScreen({ navigation }: any) {
   const filteredItems = searchTerm || filterCategory
     ? searchItems({ searchTerm, category: filterCategory })
     : items;
+
+  // Memoizar estatísticas para evitar recálculo a cada render
+  const stats = useMemo(() => ({
+    total: items.length,
+    favorites: items.filter(i => i.favorite).length,
+    totalValue: items.reduce((sum, i) => sum + (i.price || 0), 0)
+  }), [items]);
+
+  // Memoizar callbacks para evitar re-renders desnecessários
+  const keyExtractor = useCallback((item: ClosetItem) => item.id, []);
+
+  const renderItem = useCallback(({ item }: { item: ClosetItem }) => (
+    <ClosetItemCard
+      item={item}
+      onPress={() => navigation.navigate('ItemDetails', { itemId: item.id })}
+      onFavoritePress={() => toggleFavorite(item.id)}
+    />
+  ), [navigation, toggleFavorite]);
 
   if (loading) {
     return (
@@ -62,18 +80,16 @@ export function HomeScreen({ navigation }: any) {
 
       <View style={styles.statsBar}>
         <View style={styles.stat}>
-          <Text style={styles.statNumber}>{items.length}</Text>
+          <Text style={styles.statNumber}>{stats.total}</Text>
           <Text style={styles.statLabel}>Itens</Text>
         </View>
         <View style={styles.stat}>
-          <Text style={styles.statNumber}>
-            {items.filter(i => i.favorite).length}
-          </Text>
+          <Text style={styles.statNumber}>{stats.favorites}</Text>
           <Text style={styles.statLabel}>Favoritos</Text>
         </View>
         <View style={styles.stat}>
           <Text style={styles.statNumber}>
-            {items.reduce((sum, i) => sum + (i.price || 0), 0).toFixed(0)}
+            {stats.totalValue.toFixed(0)}
           </Text>
           <Text style={styles.statLabel}>R$ Total</Text>
         </View>
@@ -96,15 +112,13 @@ export function HomeScreen({ navigation }: any) {
       ) : (
         <FlatList
           data={filteredItems}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <ClosetItemCard
-              item={item}
-              onPress={() => navigation.navigate('ItemDetails', { itemId: item.id })}
-              onFavoritePress={() => toggleFavorite(item.id)}
-            />
-          )}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
           contentContainerStyle={styles.listContent}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          removeClippedSubviews={true}
         />
       )}
     </SafeAreaView>
