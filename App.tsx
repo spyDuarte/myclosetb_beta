@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
+import { ErrorBoundary } from './mobile/components/ErrorBoundary';
 import { ClosetProvider } from './mobile/contexts/ClosetContext';
 import { HomeScreen } from './mobile/screens/HomeScreen';
 import { AddItemScreen } from './mobile/screens/AddItemScreen';
@@ -95,11 +96,13 @@ function MainTabs() {
 
 export default function App() {
   return (
-    <ClosetProvider>
-      <NavigationContainer>
-        <MainTabs />
-        <StatusBar style="auto" />
-      </NavigationContainer>
-    </ClosetProvider>
+    <ErrorBoundary>
+      <ClosetProvider>
+        <NavigationContainer>
+          <MainTabs />
+          <StatusBar style="auto" />
+        </NavigationContainer>
+      </ClosetProvider>
+    </ErrorBoundary>
   );
 }
