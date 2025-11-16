@@ -12,17 +12,99 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 import { ClosetItemCard } from '../components/ClosetItemCard';
-import { Category, ClosetItem } from '../../src/models';
+import { FilterModal, FilterOptions, SortOption } from '../components/FilterModal';
+import { ClosetItem } from '../../src/models';
 import { HomeScreenProps } from '../types/navigation';
 
 export function HomeScreen({ navigation }: HomeScreenProps) {
-  const { items, loading, toggleFavorite, searchItems } = useCloset();
+  const { items, loading, toggleFavorite } = useCloset();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCategory, setFilterCategory] = useState<Category | undefined>();
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({
+    categories: [],
+    colors: [],
+    seasons: [],
+    onlyFavorites: false
+  });
+  const [sortBy, setSortBy] = useState<SortOption>('date-new');
 
-  const filteredItems = searchTerm || filterCategory
-    ? searchItems({ searchTerm, category: filterCategory })
-    : items;
+  // Aplicar filtros e busca
+  const filteredAndSortedItems = useMemo(() => {
+    let result = [...items];
+
+    // Aplicar busca por texto
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(item =>
+        item.name.toLowerCase().includes(term) ||
+        item.brand?.toLowerCase().includes(term) ||
+        item.notes?.toLowerCase().includes(term) ||
+        item.tags.some(tag => tag.toLowerCase().includes(term))
+      );
+    }
+
+    // Aplicar filtro de favoritos
+    if (filters.onlyFavorites) {
+      result = result.filter(item => item.favorite);
+    }
+
+    // Aplicar filtro de categorias
+    if (filters.categories.length > 0) {
+      result = result.filter(item => filters.categories.includes(item.category));
+    }
+
+    // Aplicar filtro de cores
+    if (filters.colors.length > 0) {
+      result = result.filter(item => filters.colors.includes(item.color));
+    }
+
+    // Aplicar filtro de estações
+    if (filters.seasons.length > 0) {
+      result = result.filter(item =>
+        item.season.some(s => filters.seasons.includes(s))
+      );
+    }
+
+    // Aplicar ordenação
+    switch (sortBy) {
+      case 'name-asc':
+        result.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+        break;
+      case 'name-desc':
+        result.sort((a, b) => b.name.localeCompare(a.name, 'pt-BR'));
+        break;
+      case 'date-new':
+        result.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        break;
+      case 'date-old':
+        result.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        break;
+      case 'price-high':
+        result.sort((a, b) => (b.price || 0) - (a.price || 0));
+        break;
+      case 'price-low':
+        result.sort((a, b) => (a.price || 0) - (b.price || 0));
+        break;
+      case 'worn-most':
+        result.sort((a, b) => b.timesWorn - a.timesWorn);
+        break;
+      case 'worn-least':
+        result.sort((a, b) => a.timesWorn - b.timesWorn);
+        break;
+    }
+
+    return result;
+  }, [items, searchTerm, filters, sortBy]);
+
+  // Contar filtros ativos
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filters.onlyFavorites) count++;
+    count += filters.categories.length;
+    count += filters.colors.length;
+    count += filters.seasons.length;
+    return count;
+  }, [filters]);
 
   // Memoizar estatísticas para evitar recálculo a cada render
   const stats = useMemo(() => ({
@@ -55,12 +137,25 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title}>Meu Closet</Text>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => navigation.navigate('AddItem')}
-        >
-          <Ionicons name="add-circle" size={32} color="#007AFF" />
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setFilterModalVisible(true)}
+          >
+            <Ionicons name="funnel" size={24} color="#007AFF" />
+            {activeFiltersCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{activeFiltersCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => navigation.navigate('AddItem')}
+          >
+            <Ionicons name="add-circle" size={32} color="#007AFF" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.searchContainer}>
@@ -95,23 +190,23 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
         </View>
       </View>
 
-      {filteredItems.length === 0 ? (
+      {filteredAndSortedItems.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Ionicons name="shirt-outline" size={80} color="#ccc" />
           <Text style={styles.emptyText}>
-            {searchTerm
+            {searchTerm || activeFiltersCount > 0
               ? 'Nenhum item encontrado'
               : 'Seu closet está vazio'}
           </Text>
           <Text style={styles.emptySubtext}>
-            {searchTerm
-              ? 'Tente outro termo de busca'
+            {searchTerm || activeFiltersCount > 0
+              ? 'Tente ajustar os filtros ou a busca'
               : 'Toque no + para adicionar seu primeiro item'}
           </Text>
         </View>
       ) : (
         <FlatList
-          data={filteredItems}
+          data={filteredAndSortedItems}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
@@ -121,6 +216,15 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
           removeClippedSubviews={true}
         />
       )}
+
+      <FilterModal
+        visible={filterModalVisible}
+        onClose={() => setFilterModalVisible(false)}
+        filters={filters}
+        onApplyFilters={setFilters}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
     </SafeAreaView>
   );
 }
@@ -152,6 +256,32 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#333'
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12
+  },
+  filterButton: {
+    padding: 4,
+    position: 'relative'
+  },
+  badge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#ff4444',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold'
   },
   addButton: {
     padding: 4
