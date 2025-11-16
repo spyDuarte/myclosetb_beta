@@ -2,6 +2,19 @@
 
 Sistema de gerenciamento de closet virtual desenvolvido em TypeScript. Organize suas roupas, acessórios e calçados de forma digital, acompanhe o uso, crie looks e gerencie seu guarda-roupa de maneira eficiente.
 
+## 🌐 Website Disponível!
+
+**Acesse agora:** [MyCloset Web](https://mycloset-beta.vercel.app) *(após deploy)*
+
+O MyCloset está disponível em **3 plataformas**:
+- 🌐 **Web (PWA)** - Acesse de qualquer navegador
+- 📱 **iOS** - App nativo para iPhone/iPad
+- 🤖 **Android** - App nativo para dispositivos Android
+
+➡️ **[Guia de Deploy do Website](./DEPLOY_NOW.md)** - Deploy em 2 minutos!
+
+---
+
 ## ✨ Funcionalidades
 
 - ✅ Adicionar, editar e remover itens do closet
