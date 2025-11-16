@@ -6,7 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,9 +18,10 @@ import { ClosetItem } from '../../src/models';
 import { HomeScreenProps } from '../types/navigation';
 
 export function HomeScreen({ navigation }: HomeScreenProps) {
-  const { items, loading, toggleFavorite } = useCloset();
+  const { items, loading, toggleFavorite, refreshItems } = useCloset();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({
     categories: [],
     colors: [],
@@ -112,6 +114,18 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
     favorites: items.filter(i => i.favorite).length,
     totalValue: items.reduce((sum, i) => sum + (i.price || 0), 0)
   }), [items]);
+
+  // Função de refresh (pull to refresh)
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refreshItems();
+    } catch (error) {
+      console.error('Erro ao atualizar:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshItems]);
 
   // Memoizar callbacks para evitar re-renders desnecessários
   const keyExtractor = useCallback((item: ClosetItem) => item.id, []);
@@ -214,6 +228,16 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
           maxToRenderPerBatch={10}
           windowSize={10}
           removeClippedSubviews={true}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor="#007AFF"
+              colors={['#007AFF']}
+              title="Atualizando..."
+              titleColor="#666"
+            />
+          }
         />
       )}
 
