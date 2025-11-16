@@ -288,7 +288,7 @@ describe('ClosetService', () => {
         price: 50
       });
 
-      const item2 = closetService.addItem({
+      closetService.addItem({
         name: 'Item 2',
         category: Category.TOPS,
         color: Color.BLACK,
@@ -340,6 +340,213 @@ describe('ClosetService', () => {
 
       expect(closetService.count()).toBe(0);
       expect(closetService.getAllItems()).toEqual([]);
+    });
+  });
+
+  describe('getUnwornItems', () => {
+    it('deve retornar todos os itens que nunca foram usados', () => {
+      const item1 = closetService.addItem({
+        name: 'Camiseta Nova',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      const item2 = closetService.addItem({
+        name: 'Jeans Usado',
+        category: Category.BOTTOMS,
+        color: Color.BLUE
+      });
+
+      const item3 = closetService.addItem({
+        name: 'Vestido Novo',
+        category: Category.DRESSES,
+        color: Color.RED
+      });
+
+      // Marcar apenas o item2 como usado
+      closetService.markAsWorn(item2.id);
+
+      const unwornItems = closetService.getUnwornItems();
+
+      expect(unwornItems).toHaveLength(2);
+      expect(unwornItems.find(item => item.id === item1.id)).toBeDefined();
+      expect(unwornItems.find(item => item.id === item3.id)).toBeDefined();
+      expect(unwornItems.find(item => item.id === item2.id)).toBeUndefined();
+    });
+
+    it('deve retornar array vazio quando todos os itens foram usados', () => {
+      const item = closetService.addItem({
+        name: 'Camiseta',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      closetService.markAsWorn(item.id);
+
+      const unwornItems = closetService.getUnwornItems();
+      expect(unwornItems).toEqual([]);
+    });
+
+    it('deve retornar todos os itens quando nenhum foi usado', () => {
+      closetService.addItem({
+        name: 'Item 1',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      closetService.addItem({
+        name: 'Item 2',
+        category: Category.BOTTOMS,
+        color: Color.BLUE
+      });
+
+      const unwornItems = closetService.getUnwornItems();
+      expect(unwornItems).toHaveLength(2);
+    });
+  });
+
+  describe('getLeastWornItems', () => {
+    it('deve retornar itens ordenados do menos usado ao mais usado', () => {
+      const item1 = closetService.addItem({
+        name: 'Muito Usado',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      const item2 = closetService.addItem({
+        name: 'Pouco Usado',
+        category: Category.BOTTOMS,
+        color: Color.BLUE
+      });
+
+      const item3 = closetService.addItem({
+        name: 'Nunca Usado',
+        category: Category.DRESSES,
+        color: Color.RED
+      });
+
+      // Usar itens diferentes quantidades de vezes
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+
+      closetService.markAsWorn(item2.id);
+      closetService.markAsWorn(item2.id);
+
+      const leastWorn = closetService.getLeastWornItems();
+
+      expect(leastWorn).toHaveLength(3);
+      expect(leastWorn[0].id).toBe(item3.id);
+      expect(leastWorn[0].timesWorn).toBe(0);
+      expect(leastWorn[1].id).toBe(item2.id);
+      expect(leastWorn[1].timesWorn).toBe(2);
+      expect(leastWorn[2].id).toBe(item1.id);
+      expect(leastWorn[2].timesWorn).toBe(5);
+    });
+
+    it('deve retornar apenas o número limite de itens quando especificado', () => {
+      closetService.addItem({
+        name: 'Item 1',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      const item2 = closetService.addItem({
+        name: 'Item 2',
+        category: Category.BOTTOMS,
+        color: Color.BLUE
+      });
+
+      const item3 = closetService.addItem({
+        name: 'Item 3',
+        category: Category.DRESSES,
+        color: Color.RED
+      });
+
+      closetService.markAsWorn(item2.id);
+      closetService.markAsWorn(item3.id);
+      closetService.markAsWorn(item3.id);
+
+      const leastWorn = closetService.getLeastWornItems(2);
+
+      expect(leastWorn).toHaveLength(2);
+      expect(leastWorn[0].timesWorn).toBe(0);
+      expect(leastWorn[1].timesWorn).toBe(1);
+    });
+  });
+
+  describe('getMostWornItems', () => {
+    it('deve retornar itens ordenados do mais usado ao menos usado', () => {
+      const item1 = closetService.addItem({
+        name: 'Muito Usado',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      const item2 = closetService.addItem({
+        name: 'Pouco Usado',
+        category: Category.BOTTOMS,
+        color: Color.BLUE
+      });
+
+      const item3 = closetService.addItem({
+        name: 'Nunca Usado',
+        category: Category.DRESSES,
+        color: Color.RED
+      });
+
+      // Usar itens diferentes quantidades de vezes
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+
+      closetService.markAsWorn(item2.id);
+      closetService.markAsWorn(item2.id);
+
+      const mostWorn = closetService.getMostWornItems();
+
+      expect(mostWorn).toHaveLength(3);
+      expect(mostWorn[0].id).toBe(item1.id);
+      expect(mostWorn[0].timesWorn).toBe(5);
+      expect(mostWorn[1].id).toBe(item2.id);
+      expect(mostWorn[1].timesWorn).toBe(2);
+      expect(mostWorn[2].id).toBe(item3.id);
+      expect(mostWorn[2].timesWorn).toBe(0);
+    });
+
+    it('deve retornar apenas o número limite de itens quando especificado', () => {
+      const item1 = closetService.addItem({
+        name: 'Item 1',
+        category: Category.TOPS,
+        color: Color.WHITE
+      });
+
+      const item2 = closetService.addItem({
+        name: 'Item 2',
+        category: Category.BOTTOMS,
+        color: Color.BLUE
+      });
+
+      closetService.addItem({
+        name: 'Item 3',
+        category: Category.DRESSES,
+        color: Color.RED
+      });
+
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item1.id);
+      closetService.markAsWorn(item2.id);
+
+      const mostWorn = closetService.getMostWornItems(2);
+
+      expect(mostWorn).toHaveLength(2);
+      expect(mostWorn[0].timesWorn).toBe(3);
+      expect(mostWorn[1].timesWorn).toBe(1);
     });
   });
 });

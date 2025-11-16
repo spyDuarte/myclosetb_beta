@@ -216,4 +216,29 @@ export class ClosetService {
   count(): number {
     return this.items.size;
   }
+
+  /**
+   * Retorna todos os itens que nunca foram usados
+   */
+  getUnwornItems(): ClosetItem[] {
+    return this.getAllItems().filter(item => item.timesWorn === 0);
+  }
+
+  /**
+   * Retorna os itens menos usados, ordenados por número de usos
+   * @param limit - Número máximo de itens a retornar (opcional)
+   */
+  getLeastWornItems(limit?: number): ClosetItem[] {
+    const items = this.getAllItems().sort((a, b) => a.timesWorn - b.timesWorn);
+    return limit ? items.slice(0, limit) : items;
+  }
+
+  /**
+   * Retorna os itens mais usados, ordenados por número de usos
+   * @param limit - Número máximo de itens a retornar (opcional)
+   */
+  getMostWornItems(limit?: number): ClosetItem[] {
+    const items = this.getAllItems().sort((a, b) => b.timesWorn - a.timesWorn);
+    return limit ? items.slice(0, limit) : items;
+  }
 }
