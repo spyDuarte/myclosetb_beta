@@ -33,7 +33,38 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
 
   // Carregar itens do AsyncStorage na inicialização
   useEffect(() => {
-    loadItems();
+    let cancelled = false;
+
+    const initializeItems = async () => {
+      try {
+        setLoading(true);
+        const storedData = await AsyncStorage.getItem(STORAGE_KEY);
+        if (cancelled) return;
+
+        if (storedData) {
+          const parsedItems: ClosetItem[] = JSON.parse(storedData);
+          const itemsWithDates = parsedItems.map(item => ({
+            ...item,
+            createdAt: new Date(item.createdAt),
+            updatedAt: new Date(item.updatedAt),
+            purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
+            lastWornDate: item.lastWornDate ? new Date(item.lastWornDate) : undefined
+          }));
+          closetService.loadItems(itemsWithDates);
+          if (!cancelled) setItems(closetService.getAllItems());
+        }
+      } catch (error) {
+        if (!cancelled) console.error('Erro ao carregar itens:', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    initializeItems();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const loadItems = async () => {
@@ -42,20 +73,15 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
       const storedData = await AsyncStorage.getItem(STORAGE_KEY);
       if (storedData) {
         const parsedItems: ClosetItem[] = JSON.parse(storedData);
-        // Restaurar itens no serviço
-        closetService.clear();
-        parsedItems.forEach(item => {
-          // Recria o item com as datas corretas
-          const itemWithDates = {
-            ...item,
-            createdAt: new Date(item.createdAt),
-            updatedAt: new Date(item.updatedAt),
-            purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
-            lastWornDate: item.lastWornDate ? new Date(item.lastWornDate) : undefined
-          };
-          // Adiciona diretamente no Map interno (hack, mas funciona)
-          (closetService as any).items.set(item.id, itemWithDates);
-        });
+        // Restaurar itens no serviço com datas deserializadas
+        const itemsWithDates = parsedItems.map(item => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+          updatedAt: new Date(item.updatedAt),
+          purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : undefined,
+          lastWornDate: item.lastWornDate ? new Date(item.lastWornDate) : undefined
+        }));
+        closetService.loadItems(itemsWithDates);
         setItems(closetService.getAllItems());
       }
     } catch (error) {
@@ -76,43 +102,94 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
 
   const addItem = async (input: CreateClosetItemInput): Promise<ClosetItem> => {
     const item = closetService.addItem(input);
-    await saveItems(closetService.getAllItems());
-    return item;
+    try {
+      await saveItems(closetService.getAllItems());
+      return item;
+    } catch (error) {
+      // Rollback: remover item se save falhou
+      closetService.deleteItem(item.id);
+      setItems(closetService.getAllItems());
+      throw new Error('Não foi possível salvar o item. Verifique o espaço disponível.');
+    }
   };
 
   const updateItem = async (
     id: string,
     updates: UpdateClosetItemInput
   ): Promise<ClosetItem | null> => {
-    const item = closetService.updateItem(id, updates);
-    if (item) {
-      await saveItems(closetService.getAllItems());
+    const originalItem = closetService.getItemById(id);
+    const updatedItem = closetService.updateItem(id, updates);
+    if (updatedItem) {
+      try {
+        await saveItems(closetService.getAllItems());
+        return updatedItem;
+      } catch (error) {
+        // Rollback: restaurar item original
+        if (originalItem) {
+          closetService.loadItems([...closetService.getAllItems().filter(i => i.id !== id), originalItem]);
+          setItems(closetService.getAllItems());
+        }
+        throw new Error('Não foi possível atualizar o item.');
+      }
     }
-    return item;
+    return null;
   };
 
   const deleteItem = async (id: string): Promise<boolean> => {
+    const deletedItem = closetService.getItemById(id);
     const result = closetService.deleteItem(id);
     if (result) {
-      await saveItems(closetService.getAllItems());
+      try {
+        await saveItems(closetService.getAllItems());
+        return true;
+      } catch (error) {
+        // Rollback: restaurar item deletado
+        if (deletedItem) {
+          closetService.loadItems([...closetService.getAllItems(), deletedItem]);
+          setItems(closetService.getAllItems());
+        }
+        throw new Error('Não foi possível remover o item.');
+      }
     }
-    return result;
+    return false;
   };
 
   const markAsWorn = async (id: string): Promise<ClosetItem | null> => {
+    const originalItem = closetService.getItemById(id);
     const item = closetService.markAsWorn(id);
     if (item) {
-      await saveItems(closetService.getAllItems());
+      try {
+        await saveItems(closetService.getAllItems());
+        return item;
+      } catch (error) {
+        // Rollback: restaurar item original
+        if (originalItem) {
+          closetService.loadItems([...closetService.getAllItems().filter(i => i.id !== id), originalItem]);
+          setItems(closetService.getAllItems());
+        }
+        throw new Error('Não foi possível marcar o item como usado.');
+      }
     }
-    return item;
+    return null;
   };
 
   const toggleFavorite = async (id: string): Promise<ClosetItem | null> => {
+    const originalItem = closetService.getItemById(id);
     const item = closetService.toggleFavorite(id);
     if (item) {
-      await saveItems(closetService.getAllItems());
+      try {
+        await saveItems(closetService.getAllItems());
+        return item;
+      } catch (error) {
+        // Rollback: restaurar item original
+        if (originalItem) {
+          closetService.loadItems([...closetService.getAllItems().filter(i => i.id !== id), originalItem]);
+          setItems(closetService.getAllItems());
+        }
+        throw new Error('Não foi possível atualizar favorito.');
+      }
     }
-    return item;
+    return null;
   };
 
   const refreshItems = async () => {

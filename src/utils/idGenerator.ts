@@ -1,7 +1,9 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /**
- * Gera um ID único simples
- * Em produção, você pode usar a biblioteca 'uuid' ou outro gerador mais robusto
+ * Gera um ID único usando UUID v4
+ * Garante unicidade global, mesmo em operações simultâneas
  */
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+  return uuidv4();
 }
