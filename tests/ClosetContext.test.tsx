@@ -13,8 +13,13 @@ describe('ClosetContext - Camada de Persistência', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
     (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe('Inicialização e Carregamento', () => {
@@ -145,6 +150,12 @@ describe('ClosetContext - Camada de Persistência', () => {
       expect(newItem).toBeDefined();
       expect(result.current.items).toHaveLength(1);
       expect(result.current.items[0].name).toBe('Novo Item');
+
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       expect(AsyncStorage.setItem).toHaveBeenCalled();
 
       // Verificar que o JSON foi salvo corretamente
@@ -223,6 +234,12 @@ describe('ClosetContext - Camada de Persistência', () => {
       const updatedItem = result.current.items.find(i => i.id === '1');
       expect(updatedItem?.name).toBe('Item Atualizado');
       expect(updatedItem?.brand).toBe('Nike');
+
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
 
@@ -257,6 +274,12 @@ describe('ClosetContext - Camada de Persistência', () => {
       });
 
       expect(result.current.items).toHaveLength(0);
+
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
   });
@@ -293,6 +316,12 @@ describe('ClosetContext - Camada de Persistência', () => {
       const item = result.current.items.find(i => i.id === '1');
       expect(item?.timesWorn).toBe(1);
       expect(item?.lastWornDate).toBeInstanceOf(Date);
+
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
 
@@ -367,6 +396,12 @@ describe('ClosetContext - Camada de Persistência', () => {
 
       item = result.current.items.find(i => i.id === '1');
       expect(item?.favorite).toBe(false);
+
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       expect(AsyncStorage.setItem).toHaveBeenCalled();
     });
   });
@@ -520,6 +555,11 @@ describe('ClosetContext - Camada de Persistência', () => {
         });
       });
 
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       expect(consoleErrorSpy).toHaveBeenCalled();
 
       consoleErrorSpy.mockRestore();
@@ -588,6 +628,11 @@ describe('ClosetContext - Camada de Persistência', () => {
         });
       });
 
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
+      });
+
       // Verificar que a data foi salva como string no AsyncStorage
       const savedData = (AsyncStorage.setItem as jest.Mock).mock.calls[0][1];
       const parsedData = JSON.parse(savedData);
@@ -632,6 +677,11 @@ describe('ClosetContext - Camada de Persistência', () => {
 
       await act(async () => {
         await result.current.addItem(complexItem);
+      });
+
+      // Avançar timers para permitir o debounce de 500ms
+      await act(async () => {
+        jest.advanceTimersByTime(500);
       });
 
       const savedData = (AsyncStorage.setItem as jest.Mock).mock.calls[0][1];

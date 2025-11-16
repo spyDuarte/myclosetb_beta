@@ -1,0 +1,18 @@
+# Testes
+tests/
+*.test.ts
+*.test.tsx
+coverage/
+
+# Development
+.vscode/
+.expo/
+.expo-shared/
+
+# CLI
+src/index.ts
+dist/index.js
+
+# Docs
+CLAUDE.md
+CODE_ANALYSIS_REPORT.md

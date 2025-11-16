@@ -23,13 +23,15 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
 
   describe('HomeScreen', () => {
     it('deve renderizar loading inicialmente', () => {
-      const { getByText } = render(
+      const { getByText, getByPlaceholderText } = render(
         <ClosetProvider>
           <HomeScreen navigation={mockNavigation} />
         </ClosetProvider>
       );
 
-      expect(getByText('Carregando closet...')).toBeTruthy();
+      // Durante o loading, a estrutura da tela deve estar visível
+      expect(getByText('Meu Closet')).toBeTruthy();
+      expect(getByPlaceholderText('Buscar itens...')).toBeTruthy();
     });
 
     it('deve renderizar título "Meu Closet"', async () => {
@@ -83,26 +85,21 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
     });
 
     it('deve navegar para AddItem ao clicar no botão +', async () => {
-      const { UNSAFE_getByProps } = render(
+      const { UNSAFE_getByProps, getByText } = render(
         <ClosetProvider>
           <HomeScreen navigation={mockNavigation} />
         </ClosetProvider>
       );
 
+      // Aguardar o carregamento completar (skeleton desaparece e estatísticas aparecem)
+      await waitFor(() => {
+        expect(getByText('Itens')).toBeTruthy();
+      });
+
+      // Encontrar e clicar no ícone de adicionar
       await waitFor(() => {
         const addIcon = UNSAFE_getByProps({ name: 'add-circle' });
         expect(addIcon).toBeTruthy();
-      });
-
-      // Encontrar o TouchableOpacity pai do ícone
-      const { UNSAFE_getByProps: getByProps2 } = render(
-        <ClosetProvider>
-          <HomeScreen navigation={mockNavigation} />
-        </ClosetProvider>
-      );
-
-      await waitFor(() => {
-        const addIcon = getByProps2({ name: 'add-circle' });
         fireEvent.press(addIcon.parent);
       });
 
@@ -281,30 +278,37 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
 
       await waitFor(() => {
         expect(getByText('Nenhum item encontrado')).toBeTruthy();
-        expect(getByText('Tente outro termo de busca')).toBeTruthy();
+        expect(getByText('Tente ajustar os filtros ou a busca')).toBeTruthy();
       });
     });
 
     it('deve limpar busca ao clicar no X', async () => {
-      const { getByPlaceholderText, UNSAFE_getByProps } = render(
+      const { getByPlaceholderText, UNSAFE_getByProps, getByText } = render(
         <ClosetProvider>
           <HomeScreen navigation={mockNavigation} />
         </ClosetProvider>
       );
 
+      // Aguardar o carregamento completar
       await waitFor(() => {
-        const searchInput = getByPlaceholderText('Buscar itens...');
-        fireEvent.changeText(searchInput, 'teste');
+        expect(getByText('Itens')).toBeTruthy();
       });
 
+      // Digitar texto na busca
+      const searchInput = getByPlaceholderText('Buscar itens...');
+      fireEvent.changeText(searchInput, 'teste');
+
+      // Aguardar o ícone de fechar aparecer e clicar nele
       await waitFor(() => {
         const closeIcon = UNSAFE_getByProps({ name: 'close-circle' });
         expect(closeIcon).toBeTruthy();
         fireEvent.press(closeIcon.parent);
       });
 
-      const searchInput = getByPlaceholderText('Buscar itens...');
-      expect(searchInput.props.value).toBe('');
+      // Verificar que a busca foi limpa
+      await waitFor(() => {
+        expect(searchInput.props.value).toBe('');
+      });
     });
   });
 
