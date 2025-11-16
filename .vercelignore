@@ -8,11 +8,27 @@ coverage/
 .vscode/
 .expo/
 .expo-shared/
+node_modules/
+
+# Mobile/Expo
+mobile/
+App.tsx
+app.json
+babel.config.js
+metro.config.js
 
 # CLI
-src/index.ts
-dist/index.js
+src/
+dist/
 
 # Docs
 CLAUDE.md
 CODE_ANALYSIS_REPORT.md
+*.md
+!README.md
+
+# Config
+.eslintrc.js
+.prettierrc
+tsconfig.json
+jest.config.js
