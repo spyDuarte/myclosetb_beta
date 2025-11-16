@@ -6,13 +6,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ActivityIndicator,
   RefreshControl
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 import { ClosetItemCard } from '../components/ClosetItemCard';
+import { ItemCardSkeleton } from '../components/ItemCardSkeleton';
 import { FilterModal, FilterOptions, SortOption } from '../components/FilterModal';
 import { ClosetItem } from '../../src/models';
 import { HomeScreenProps } from '../types/navigation';
@@ -138,13 +138,47 @@ export function HomeScreen({ navigation }: HomeScreenProps) {
     />
   ), [navigation, toggleFavorite]);
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Carregando closet...</Text>
+  // Renderizar skeleton cards durante carregamento inicial
+  const renderSkeletonCards = () => (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Meu Closet</Text>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.filterButton}
+            disabled={true}
+          >
+            <Ionicons name="funnel" size={24} color="#ccc" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addButton}
+            disabled={true}
+          >
+            <Ionicons name="add-circle" size={32} color="#ccc" />
+          </TouchableOpacity>
+        </View>
       </View>
-    );
+
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#999" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar itens..."
+          editable={false}
+        />
+      </View>
+
+      <FlatList
+        data={[1, 2, 3, 4, 5, 6, 7, 8]}
+        keyExtractor={(item) => `skeleton-${item}`}
+        renderItem={() => <ItemCardSkeleton />}
+        contentContainerStyle={styles.listContent}
+      />
+    </SafeAreaView>
+  );
+
+  if (loading) {
+    return renderSkeletonCards();
   }
 
   return (
@@ -257,16 +291,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5'
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#666'
   },
   header: {
     flexDirection: 'row',
