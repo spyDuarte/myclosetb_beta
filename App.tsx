@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { ClosetProvider } from './mobile/contexts/ClosetContext';
 import { HomeScreen } from './mobile/screens/HomeScreen';
 import { AddItemScreen } from './mobile/screens/AddItemScreen';
+import { EditItemScreen } from './mobile/screens/EditItemScreen';
 import { ItemDetailsScreen } from './mobile/screens/ItemDetailsScreen';
 import { StatsScreen } from './mobile/screens/StatsScreen';
 
@@ -27,6 +28,16 @@ function HomeStack() {
         component={AddItemScreen}
         options={{
           title: 'Adicionar Item',
+          headerStyle: { backgroundColor: '#007AFF' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' }
+        }}
+      />
+      <Stack.Screen
+        name="EditItem"
+        component={EditItemScreen}
+        options={{
+          title: 'Editar Item',
           headerStyle: { backgroundColor: '#007AFF' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' }

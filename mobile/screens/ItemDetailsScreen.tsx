@@ -140,6 +140,14 @@ export function ItemDetailsScreen({ route, navigation }: ItemDetailsScreenProps)
           </View>
         )}
 
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate('EditItem', { itemId: item.id })}
+        >
+          <Ionicons name="pencil-outline" size={24} color="#fff" />
+          <Text style={styles.editButtonText}>Editar Item</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.wornButton} onPress={handleMarkAsWorn}>
           <Ionicons name="checkmark-circle-outline" size={24} color="#fff" />
           <Text style={styles.wornButtonText}>Marcar como Usado</Text>
@@ -264,6 +272,21 @@ const styles = StyleSheet.create({
     color: '#666',
     lineHeight: 24
   },
+  editButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    marginTop: 8
+  },
+  editButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: 8
+  },
   wornButton: {
     backgroundColor: '#4CAF50',
     borderRadius: 12,
@@ -271,7 +294,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 16,
-    marginTop: 8
+    marginTop: 12
   },
   wornButtonText: {
     color: '#fff',

@@ -10,6 +10,7 @@ import { CompositeScreenProps } from '@react-navigation/native';
 export type HomeStackParamList = {
   HomeMain: undefined;
   AddItem: undefined;
+  EditItem: { itemId: string };
   ItemDetails: { itemId: string };
 };
 
@@ -22,6 +23,7 @@ export type RootTabParamList = {
 // Props para telas do HomeStack
 export type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'HomeMain'>;
 export type AddItemScreenProps = NativeStackScreenProps<HomeStackParamList, 'AddItem'>;
+export type EditItemScreenProps = NativeStackScreenProps<HomeStackParamList, 'EditItem'>;
 export type ItemDetailsScreenProps = NativeStackScreenProps<HomeStackParamList, 'ItemDetails'>;
 
 // Props para telas das Tabs
