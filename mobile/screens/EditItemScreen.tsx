@@ -7,17 +7,21 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 import { Category, Color, Season } from '../../src/models';
 import { EditItemScreenProps } from '../types/navigation';
+import { useImagePicker } from '../hooks/useImagePicker';
 
 export function EditItemScreen({ route, navigation }: EditItemScreenProps) {
   const { itemId } = route.params;
   const { getItemById, updateItem } = useCloset();
   const item = getItemById(itemId);
+  const { imageUri, showImagePickerOptions, removeImage, setImage } = useImagePicker();
 
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
@@ -40,8 +44,9 @@ export function EditItemScreen({ route, navigation }: EditItemScreenProps) {
       setPrice(item.price ? item.price.toString() : '');
       setNotes(item.notes || '');
       setSelectedSeasons(item.season);
+      setImage(item.imageUrl);
     }
-  }, [item]);
+  }, [item, setImage]);
 
   if (!item) {
     return (
@@ -109,7 +114,8 @@ export function EditItemScreen({ route, navigation }: EditItemScreenProps) {
         size: size.trim() || undefined,
         price: parsedPrice,
         season: selectedSeasons,
-        notes: notes.trim() || undefined
+        notes: notes.trim() || undefined,
+        imageUrl: imageUri
       });
 
       Alert.alert('Sucesso', 'Item atualizado com sucesso!', [
@@ -129,6 +135,27 @@ export function EditItemScreen({ route, navigation }: EditItemScreenProps) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.form}>
+        <Text style={styles.label}>Foto do Item</Text>
+        {imageUri ? (
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: imageUri }} style={styles.image} />
+            <TouchableOpacity
+              style={styles.removeImageButton}
+              onPress={removeImage}
+            >
+              <Ionicons name="close-circle" size={32} color="#ff4444" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.addImageButton}
+            onPress={showImagePickerOptions}
+          >
+            <Ionicons name="camera" size={48} color="#007AFF" />
+            <Text style={styles.addImageText}>Adicionar Foto</Text>
+          </TouchableOpacity>
+        )}
+
         <Text style={styles.label}>Nome do Item *</Text>
         <TextInput
           style={styles.input}
@@ -327,6 +354,44 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: '#666',
     fontSize: 18,
+    fontWeight: '600'
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 250,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 8
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 16,
+    padding: 2
+  },
+  addImageButton: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    borderStyle: 'dashed',
+    height: 200,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  addImageText: {
+    marginTop: 8,
+    fontSize: 16,
+    color: '#007AFF',
     fontWeight: '600'
   }
 });

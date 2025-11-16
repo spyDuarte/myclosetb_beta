@@ -5,7 +5,8 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
@@ -51,9 +52,13 @@ export function ItemDetailsScreen({ route, navigation }: ItemDetailsScreenProps)
   return (
     <ScrollView style={styles.container}>
       <View style={styles.imageContainer}>
-        <View style={[styles.placeholderImage, { backgroundColor: item.color }]}>
-          <Ionicons name="shirt-outline" size={80} color="#fff" />
-        </View>
+        {item.imageUrl ? (
+          <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+        ) : (
+          <View style={[styles.placeholderImage, { backgroundColor: item.color }]}>
+            <Ionicons name="shirt-outline" size={80} color="#fff" />
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -191,6 +196,11 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: 300
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
   },
   placeholderImage: {
     width: '100%',
