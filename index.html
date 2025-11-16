@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#007AFF" />
+    <meta name="description" content="MyCloset - Organize seu guarda-roupa digitalmente" />
+
+    <title>MyCloset - Organize seu Guarda-Roupa Digital</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        padding: 60px 40px;
+        max-width: 800px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+
+      .logo {
+        font-size: 80px;
+        margin-bottom: 20px;
+      }
+
+      h1 {
+        color: #333;
+        font-size: 42px;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: #666;
+        font-size: 20px;
+        margin-bottom: 40px;
+        line-height: 1.6;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 30px;
+        margin: 50px 0;
+        text-align: left;
+      }
+
+      .feature {
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+      }
+
+      .feature:hover {
+        transform: translateY(-5px);
+      }
+
+      .feature-icon {
+        font-size: 36px;
+        margin-bottom: 15px;
+        display: block;
+      }
+
+      .feature-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+      }
+
+      .feature-desc {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+      }
+
+      .btn {
+        padding: 16px 40px;
+        font-size: 18px;
+        font-weight: 600;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: #007AFF;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(0, 122, 255, 0.4);
+      }
+
+      .btn-secondary {
+        background: white;
+        color: #007AFF;
+        border: 2px solid #007AFF;
+      }
+
+      .btn-secondary:hover {
+        background: #007AFF;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      .stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 50px 0;
+        padding: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        color: white;
+      }
+
+      .stat {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 36px;
+        font-weight: 700;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+
+      .info {
+        margin-top: 40px;
+        padding: 25px;
+        background: #fff3cd;
+        border-radius: 10px;
+        border-left: 4px solid #ffc107;
+      }
+
+      .info-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #856404;
+      }
+
+      .info-text {
+        color: #856404;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 40px 25px;
+        }
+
+        h1 {
+          font-size: 32px;
+        }
+
+        .subtitle {
+          font-size: 18px;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+        }
+
+        .stats {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .cta-buttons {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">👔</div>
+      <h1>MyCloset</h1>
+      <p class="subtitle">
+        Organize seu guarda-roupa digitalmente. Gerencie suas roupas, crie looks incríveis e acompanhe estatísticas de uso.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-number">3</span>
+          <span class="stat-label">Plataformas</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">12</span>
+          <span class="stat-label">Categorias</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">∞</span>
+          <span class="stat-label">Possibilidades</span>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <span class="feature-icon">📸</span>
+          <div class="feature-title">Upload de Fotos</div>
+          <div class="feature-desc">Adicione fotos das suas roupas diretamente da câmera ou galeria</div>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">🔍</span>
+          <div class="feature-title">Busca Avançada</div>
+          <div class="feature-desc">Encontre itens rapidamente com filtros por categoria, cor e estação</div>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">⭐</span>
+          <div class="feature-title">Favoritos</div>
+          <div class="feature-desc">Marque seus itens preferidos para acesso rápido</div>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">📊</span>
+          <div class="feature-title">Estatísticas</div>
+          <div class="feature-desc">Veja métricas do seu guarda-roupa e itens mais usados</div>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">🏷️</span>
+          <div class="feature-title">Tags Customizadas</div>
+          <div class="feature-desc">Organize com tags personalizadas para encontrar tudo facilmente</div>
+        </div>
+
+        <div class="feature">
+          <span class="feature-icon">💾</span>
+          <div class="feature-title">Dados Locais</div>
+          <div class="feature-desc">Todos os dados ficam no seu dispositivo, 100% privado</div>
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="info-title">🚀 Versão Web em Desenvolvimento</div>
+        <div class="info-text">
+          A versão web está sendo preparada para você! Por enquanto, baixe nosso app mobile para iOS e Android,
+          ou clone o repositório no GitHub para testar localmente.
+        </div>
+      </div>
+
+      <div class="cta-buttons">
+        <a href="https://github.com/spyDuarte/myclosetb_beta" class="btn btn-primary" target="_blank">
+          📦 Ver no GitHub
+        </a>
+        <a href="https://github.com/spyDuarte/myclosetb_beta#readme" class="btn btn-secondary" target="_blank">
+          📖 Documentação
+        </a>
+      </div>
+
+      <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee;">
+        <p style="color: #999; font-size: 14px;">
+          <strong>Tecnologias:</strong> React Native · Expo · TypeScript · React Navigation
+        </p>
+        <p style="color: #999; font-size: 14px; margin-top: 10px;">
+          <strong>Plataformas:</strong> iOS · Android · Web (PWA)
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // Add some interactive animation
+      document.querySelectorAll('.feature').forEach((feature, index) => {
+        feature.style.opacity = '0';
+        feature.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+          feature.style.transition = 'all 0.5s ease';
+          feature.style.opacity = '1';
+          feature.style.transform = 'translateY(0)';
+        }, index * 100);
+      });
+    </script>
+  </body>
+</html>
