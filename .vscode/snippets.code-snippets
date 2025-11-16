@@ -1,0 +1,136 @@
+{
+  "React Native Functional Component": {
+    "prefix": "rnfc",
+    "body": [
+      "import React from 'react';",
+      "import {",
+      "  View,",
+      "  Text,",
+      "  StyleSheet,",
+      "} from 'react-native';",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export function ${1:ComponentName}({ $3 }: ${1:ComponentName}Props) {",
+      "  return (",
+      "    <View style={styles.container}>",
+      "      <Text>$4</Text>",
+      "    </View>",
+      "  );",
+      "}",
+      "",
+      "const styles = StyleSheet.create({",
+      "  container: {",
+      "    flex: 1,",
+      "  },",
+      "});",
+      ""
+    ],
+    "description": "Create a React Native Functional Component"
+  },
+  "React Native Screen": {
+    "prefix": "rnscreen",
+    "body": [
+      "import React from 'react';",
+      "import {",
+      "  View,",
+      "  Text,",
+      "  StyleSheet,",
+      "  ScrollView,",
+      "} from 'react-native';",
+      "import { SafeAreaView } from 'react-native-safe-area-context';",
+      "",
+      "export function ${1:ScreenName}({ navigation }: any) {",
+      "  return (",
+      "    <SafeAreaView style={styles.safeArea} edges={['top']}>",
+      "      <ScrollView style={styles.container}>",
+      "        <Text style={styles.title}>$2</Text>",
+      "        $3",
+      "      </ScrollView>",
+      "    </SafeAreaView>",
+      "  );",
+      "}",
+      "",
+      "const styles = StyleSheet.create({",
+      "  safeArea: {",
+      "    flex: 1,",
+      "    backgroundColor: '#fff',",
+      "  },",
+      "  container: {",
+      "    flex: 1,",
+      "  },",
+      "  title: {",
+      "    fontSize: 24,",
+      "    fontWeight: 'bold',",
+      "    padding: 16,",
+      "  },",
+      "});",
+      ""
+    ],
+    "description": "Create a React Native Screen with SafeAreaView"
+  },
+  "Jest Test Suite": {
+    "prefix": "jtest",
+    "body": [
+      "describe('${1:TestSuiteName}', () => {",
+      "  beforeEach(() => {",
+      "    $2",
+      "  });",
+      "",
+      "  it('should $3', () => {",
+      "    $4",
+      "    expect($5).toBe($6);",
+      "  });",
+      "});",
+      ""
+    ],
+    "description": "Create a Jest test suite"
+  },
+  "React Native StyleSheet": {
+    "prefix": "rnstyle",
+    "body": [
+      "const styles = StyleSheet.create({",
+      "  ${1:styleName}: {",
+      "    $2",
+      "  },",
+      "});",
+      ""
+    ],
+    "description": "Create a React Native StyleSheet"
+  },
+  "Import useCloset": {
+    "prefix": "iuc",
+    "body": [
+      "import { useCloset } from '../contexts/ClosetContext';"
+    ],
+    "description": "Import useCloset hook"
+  },
+  "Use Closet Hook": {
+    "prefix": "ucloset",
+    "body": [
+      "const { ${1:items}, ${2:loading}, ${3:addItem} } = useCloset();"
+    ],
+    "description": "Use the Closet context hook"
+  },
+  "Console Log": {
+    "prefix": "clg",
+    "body": [
+      "console.log('${1:label}:', $2);"
+    ],
+    "description": "Console log with label"
+  },
+  "Try Catch Block": {
+    "prefix": "tryc",
+    "body": [
+      "try {",
+      "  $1",
+      "} catch (error) {",
+      "  console.error('${2:Error}:', error);",
+      "  $3",
+      "}"
+    ],
+    "description": "Try catch block with error logging"
+  }
+}
