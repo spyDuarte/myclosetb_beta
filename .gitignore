@@ -36,7 +36,7 @@ target/
 logs/
 
 # IDEs e Editores
-.vscode/
+# .vscode/ - Mantemos versionado para compartilhar configurações
 .idea/
 *.swp
 *.swo

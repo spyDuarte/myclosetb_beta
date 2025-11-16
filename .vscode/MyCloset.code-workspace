@@ -1,0 +1,70 @@
+{
+  "folders": [
+    {
+      "path": "..",
+      "name": "MyCloset Beta"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.DS_Store": true,
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.expo": true,
+      "**/coverage": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "msjsdiag.vscode-react-native",
+      "expo.vscode-expo-tools",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "orta.vscode-jest"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🚀 Start Expo",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["start"],
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "📱 Debug iOS",
+        "type": "reactnative",
+        "request": "launch",
+        "platform": "ios"
+      },
+      {
+        "name": "🤖 Debug Android",
+        "type": "reactnative",
+        "request": "launch",
+        "platform": "android"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 Quick Start",
+        "type": "shell",
+        "command": "npm start",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "reveal": "always",
+          "panel": "dedicated"
+        }
+      }
+    ]
+  }
+}
