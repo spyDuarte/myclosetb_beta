@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,23 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
   Image
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
 import { Category, Color, Season } from '../../src/models';
-import { AddItemScreenProps } from '../types/navigation';
+import { EditItemScreenProps } from '../types/navigation';
 import { useImagePicker } from '../hooks/useImagePicker';
 
-export function AddItemScreen({ navigation }: AddItemScreenProps) {
-  const { addItem } = useCloset();
-  const { imageUri, showImagePickerOptions, removeImage } = useImagePicker();
+export function EditItemScreen({ route, navigation }: EditItemScreenProps) {
+  const { itemId } = route.params;
+  const { getItemById, updateItem } = useCloset();
+  const item = getItemById(itemId);
+  const { imageUri, showImagePickerOptions, removeImage, setImage } = useImagePicker();
+
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [category, setCategory] = useState<Category>(Category.TOPS);
   const [color, setColor] = useState<Color>(Color.WHITE);
@@ -27,6 +32,35 @@ export function AddItemScreen({ navigation }: AddItemScreenProps) {
   const [price, setPrice] = useState('');
   const [notes, setNotes] = useState('');
   const [selectedSeasons, setSelectedSeasons] = useState<Season[]>([Season.ALL_SEASONS]);
+
+  // Carregar dados do item ao montar o componente
+  useEffect(() => {
+    if (item) {
+      setName(item.name);
+      setCategory(item.category);
+      setColor(item.color);
+      setBrand(item.brand || '');
+      setSize(item.size || '');
+      setPrice(item.price ? item.price.toString() : '');
+      setNotes(item.notes || '');
+      setSelectedSeasons(item.season);
+      setImage(item.imageUrl);
+    }
+  }, [item, setImage]);
+
+  if (!item) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Item não encontrado</Text>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.backButtonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const handleSubmit = async () => {
     // Validação de nome
@@ -71,7 +105,8 @@ export function AddItemScreen({ navigation }: AddItemScreenProps) {
     }
 
     try {
-      await addItem({
+      setLoading(true);
+      await updateItem(itemId, {
         name: name.trim(),
         category,
         color,
@@ -83,15 +118,17 @@ export function AddItemScreen({ navigation }: AddItemScreenProps) {
         imageUrl: imageUri
       });
 
-      Alert.alert('Sucesso', 'Item adicionado ao closet!', [
+      Alert.alert('Sucesso', 'Item atualizado com sucesso!', [
         {
           text: 'OK',
           onPress: () => navigation.goBack()
         }
       ]);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Não foi possível adicionar o item';
+      const errorMessage = error instanceof Error ? error.message : 'Não foi possível atualizar o item';
       Alert.alert('Erro', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -208,13 +245,22 @@ export function AddItemScreen({ navigation }: AddItemScreenProps) {
           numberOfLines={4}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Adicionar Item</Text>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Salvar Alterações</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, styles.cancelButton]}
           onPress={() => navigation.goBack()}
+          disabled={loading}
         >
           <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
@@ -227,6 +273,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5'
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 20
+  },
+  backButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600'
   },
   form: {
     padding: 16
@@ -267,6 +335,9 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 24
+  },
+  buttonDisabled: {
+    backgroundColor: '#999'
   },
   buttonText: {
     color: '#fff',

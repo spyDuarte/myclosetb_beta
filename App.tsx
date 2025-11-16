@@ -5,9 +5,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
+import { ErrorBoundary } from './mobile/components/ErrorBoundary';
 import { ClosetProvider } from './mobile/contexts/ClosetContext';
 import { HomeScreen } from './mobile/screens/HomeScreen';
 import { AddItemScreen } from './mobile/screens/AddItemScreen';
+import { EditItemScreen } from './mobile/screens/EditItemScreen';
 import { ItemDetailsScreen } from './mobile/screens/ItemDetailsScreen';
 import { StatsScreen } from './mobile/screens/StatsScreen';
 
@@ -27,6 +29,16 @@ function HomeStack() {
         component={AddItemScreen}
         options={{
           title: 'Adicionar Item',
+          headerStyle: { backgroundColor: '#007AFF' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' }
+        }}
+      />
+      <Stack.Screen
+        name="EditItem"
+        component={EditItemScreen}
+        options={{
+          title: 'Editar Item',
           headerStyle: { backgroundColor: '#007AFF' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' }
@@ -84,11 +96,13 @@ function MainTabs() {
 
 export default function App() {
   return (
-    <ClosetProvider>
-      <NavigationContainer>
-        <MainTabs />
-        <StatusBar style="auto" />
-      </NavigationContainer>
-    </ClosetProvider>
+    <ErrorBoundary>
+      <ClosetProvider>
+        <NavigationContainer>
+          <MainTabs />
+          <StatusBar style="auto" />
+        </NavigationContainer>
+      </ClosetProvider>
+    </ErrorBoundary>
   );
 }
