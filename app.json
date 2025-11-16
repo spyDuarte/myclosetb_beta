@@ -11,6 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.spyduarte.mycloset",
@@ -18,23 +21,43 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "O MyCloset precisa acessar suas fotos para adicionar imagens dos seus itens de roupa.",
         "NSCameraUsageDescription": "O MyCloset precisa acessar sua câmera para tirar fotos dos seus itens de roupa.",
-        "NSPhotoLibraryAddUsageDescription": "O MyCloset precisa salvar fotos na sua biblioteca."
-      }
+        "NSPhotoLibraryAddUsageDescription": "O MyCloset precisa salvar fotos na sua biblioteca.",
+        "UIBackgroundModes": [],
+        "UIRequiresFullScreen": false,
+        "UIStatusBarStyle": "UIStatusBarStyleDefault"
+      },
+      "requireFullScreen": false,
+      "userInterfaceStyle": "automatic"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.spyduarte.mycloset"
+      "package": "com.spyduarte.mycloset",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "userInterfaceStyle": "automatic"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "scheme": "mycloset",
     "platforms": [
       "ios",
       "android"
-    ]
+    ],
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id-here"
+      }
+    },
+    "owner": "spyduarte"
   }
 }
