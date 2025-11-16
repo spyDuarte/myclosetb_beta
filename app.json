@@ -45,12 +45,22 @@
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "bundler": "metro"
+      "bundler": "metro",
+      "name": "MyCloset - Organize seu Guarda-Roupa",
+      "shortName": "MyCloset",
+      "lang": "pt-BR",
+      "scope": "/",
+      "themeColor": "#007AFF",
+      "backgroundColor": "#ffffff",
+      "display": "standalone",
+      "startUrl": ".",
+      "description": "Gerencie seu guarda-roupa digitalmente com MyCloset. Organize roupas, crie looks e acompanhe estatísticas."
     },
     "scheme": "mycloset",
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "web"
     ],
     "plugins": [],
     "extra": {
