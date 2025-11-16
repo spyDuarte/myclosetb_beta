@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
+import { ItemDetailsScreenProps } from '../types/navigation';
+import { getCategoryLabel, getColorLabel, getSeasonLabel } from '../utils/labels';
 
-export function ItemDetailsScreen({ route, navigation }: any) {
+export function ItemDetailsScreen({ route, navigation }: ItemDetailsScreenProps) {
   const { itemId } = route.params;
   const { getItemById, toggleFavorite, markAsWorn, deleteItem } = useCloset();
   const item = getItemById(itemId);
@@ -71,8 +73,8 @@ export function ItemDetailsScreen({ route, navigation }: any) {
         )}
 
         <View style={styles.section}>
-          <InfoRow icon="pricetag-outline" label="Categoria" value={item.category} />
-          <InfoRow icon="color-palette-outline" label="Cor" value={item.color} />
+          <InfoRow icon="pricetag-outline" label="Categoria" value={getCategoryLabel(item.category)} />
+          <InfoRow icon="color-palette-outline" label="Cor" value={getColorLabel(item.color)} />
           {item.size && (
             <InfoRow icon="resize-outline" label="Tamanho" value={item.size} />
           )}
@@ -111,7 +113,7 @@ export function ItemDetailsScreen({ route, navigation }: any) {
             <View style={styles.tags}>
               {item.season.map((s, index) => (
                 <View key={index} style={styles.tag}>
-                  <Text style={styles.tagText}>{s}</Text>
+                  <Text style={styles.tagText}>{getSeasonLabel(s)}</Text>
                 </View>
               ))}
             </View>
@@ -152,7 +154,11 @@ export function ItemDetailsScreen({ route, navigation }: any) {
   );
 }
 
-function InfoRow({ icon, label, value }: { icon: any; label: string; value: string }) {
+function InfoRow({ icon, label, value }: {
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  value: string
+}) {
   return (
     <View style={styles.infoRow}>
       <View style={styles.infoLeft}>

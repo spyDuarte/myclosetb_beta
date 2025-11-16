@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ClosetService } from '../../src/services/ClosetService';
 import {
@@ -30,6 +30,7 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
   const [closetService] = useState(() => new ClosetService());
   const [items, setItems] = useState<ClosetItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Carregar itens do AsyncStorage na inicialização
   useEffect(() => {
@@ -64,6 +65,10 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
 
     return () => {
       cancelled = true;
+      // Limpar timeout pendente ao desmontar
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -91,16 +96,25 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const saveItems = async (updatedItems: ClosetItem[]) => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedItems));
-      setItems(updatedItems);
-    } catch (error) {
-      console.error('Erro ao salvar itens:', error);
-    }
-  };
+  const saveItems = useCallback(async (updatedItems: ClosetItem[]) => {
+    // Atualizar estado imediatamente
+    setItems(updatedItems);
 
-  const addItem = async (input: CreateClosetItemInput): Promise<ClosetItem> => {
+    // Debounce da escrita no AsyncStorage
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedItems));
+      } catch (error) {
+        console.error('Erro ao salvar itens:', error);
+      }
+    }, 500); // Aguardar 500ms de inatividade antes de salvar
+  }, []);
+
+  const addItem = useCallback(async (input: CreateClosetItemInput): Promise<ClosetItem> => {
     const item = closetService.addItem(input);
     try {
       await saveItems(closetService.getAllItems());
@@ -111,9 +125,9 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
       setItems(closetService.getAllItems());
       throw new Error('Não foi possível salvar o item. Verifique o espaço disponível.');
     }
-  };
+  }, [closetService, saveItems]);
 
-  const updateItem = async (
+  const updateItem = useCallback(async (
     id: string,
     updates: UpdateClosetItemInput
   ): Promise<ClosetItem | null> => {
@@ -133,9 +147,9 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
       }
     }
     return null;
-  };
+  }, [closetService, saveItems]);
 
-  const deleteItem = async (id: string): Promise<boolean> => {
+  const deleteItem = useCallback(async (id: string): Promise<boolean> => {
     const deletedItem = closetService.getItemById(id);
     const result = closetService.deleteItem(id);
     if (result) {
@@ -152,9 +166,9 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
       }
     }
     return false;
-  };
+  }, [closetService, saveItems]);
 
-  const markAsWorn = async (id: string): Promise<ClosetItem | null> => {
+  const markAsWorn = useCallback(async (id: string): Promise<ClosetItem | null> => {
     const originalItem = closetService.getItemById(id);
     const item = closetService.markAsWorn(id);
     if (item) {
@@ -171,9 +185,9 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
       }
     }
     return null;
-  };
+  }, [closetService, saveItems]);
 
-  const toggleFavorite = async (id: string): Promise<ClosetItem | null> => {
+  const toggleFavorite = useCallback(async (id: string): Promise<ClosetItem | null> => {
     const originalItem = closetService.getItemById(id);
     const item = closetService.toggleFavorite(id);
     if (item) {
@@ -190,25 +204,29 @@ export function ClosetProvider({ children }: { children: ReactNode }) {
       }
     }
     return null;
-  };
+  }, [closetService, saveItems]);
 
-  const refreshItems = async () => {
+  const refreshItems = useCallback(async () => {
     await loadItems();
-  };
+  }, []);
 
-  const value: ClosetContextType = {
+  const getItemById = useCallback((id: string) => closetService.getItemById(id), [closetService]);
+  const searchItems = useCallback((filters: ClosetItemFilters) => closetService.searchItems(filters), [closetService]);
+  const getStatistics = useCallback(() => closetService.getStatistics(), [closetService]);
+
+  const value: ClosetContextType = useMemo(() => ({
     items,
     loading,
     addItem,
     updateItem,
     deleteItem,
-    getItemById: (id) => closetService.getItemById(id),
+    getItemById,
     markAsWorn,
     toggleFavorite,
-    searchItems: (filters) => closetService.searchItems(filters),
-    getStatistics: () => closetService.getStatistics(),
+    searchItems,
+    getStatistics,
     refreshItems
-  };
+  }), [items, loading, addItem, updateItem, deleteItem, getItemById, markAsWorn, toggleFavorite, searchItems, getStatistics, refreshItems]);
 
   return <ClosetContext.Provider value={value}>{children}</ClosetContext.Provider>;
 }

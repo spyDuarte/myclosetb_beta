@@ -8,6 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useCloset } from '../contexts/ClosetContext';
+import { getCategoryLabel, getCategoryColor } from '../utils/labels';
 
 export function StatsScreen() {
   const { getStatistics } = useCloset();
@@ -106,42 +107,6 @@ export function StatsScreen() {
       </ScrollView>
     </SafeAreaView>
   );
-}
-
-function getCategoryLabel(category: string): string {
-  const labels: Record<string, string> = {
-    tops: 'Blusas/Camisetas',
-    bottoms: 'Calças/Shorts',
-    dresses: 'Vestidos',
-    outerwear: 'Jaquetas/Casacos',
-    shoes: 'Calçados',
-    accessories: 'Acessórios',
-    bags: 'Bolsas',
-    jewelry: 'Joias',
-    underwear: 'Roupa Íntima',
-    activewear: 'Roupas Esportivas',
-    sleepwear: 'Pijamas',
-    other: 'Outro'
-  };
-  return labels[category] || category;
-}
-
-function getCategoryColor(category: string): string {
-  const colors: Record<string, string> = {
-    tops: '#007AFF',
-    bottoms: '#5856D6',
-    dresses: '#FF2D55',
-    outerwear: '#AF52DE',
-    shoes: '#FF9500',
-    accessories: '#FFCC00',
-    bags: '#FF3B30',
-    jewelry: '#FFD700',
-    underwear: '#34C759',
-    activewear: '#00C7BE',
-    sleepwear: '#5AC8FA',
-    other: '#8E8E93'
-  };
-  return colors[category] || '#999';
 }
 
 const styles = StyleSheet.create({

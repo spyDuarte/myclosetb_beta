@@ -11,8 +11,9 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import { useCloset } from '../contexts/ClosetContext';
 import { Category, Color, Season } from '../../src/models';
+import { AddItemScreenProps } from '../types/navigation';
 
-export function AddItemScreen({ navigation }: any) {
+export function AddItemScreen({ navigation }: AddItemScreenProps) {
   const { addItem } = useCloset();
   const [name, setName] = useState('');
   const [category, setCategory] = useState<Category>(Category.TOPS);
