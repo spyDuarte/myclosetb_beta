@@ -24,8 +24,44 @@ export function AddItemScreen({ navigation }: any) {
   const [selectedSeasons, setSelectedSeasons] = useState<Season[]>([Season.ALL_SEASONS]);
 
   const handleSubmit = async () => {
+    // Validação de nome
     if (!name.trim()) {
       Alert.alert('Erro', 'Por favor, digite um nome para o item');
+      return;
+    }
+
+    if (name.trim().length > 100) {
+      Alert.alert('Erro', 'Nome muito longo (máximo 100 caracteres)');
+      return;
+    }
+
+    // Validação de marca
+    if (brand && brand.length > 50) {
+      Alert.alert('Erro', 'Marca muito longa (máximo 50 caracteres)');
+      return;
+    }
+
+    // Validação de preço
+    let parsedPrice: number | undefined;
+    if (price) {
+      parsedPrice = parseFloat(price);
+      if (isNaN(parsedPrice)) {
+        Alert.alert('Erro', 'Preço inválido. Digite apenas números.');
+        return;
+      }
+      if (parsedPrice < 0) {
+        Alert.alert('Erro', 'Preço não pode ser negativo.');
+        return;
+      }
+      if (parsedPrice > 999999.99) {
+        Alert.alert('Erro', 'Preço muito alto (máximo R$ 999.999,99)');
+        return;
+      }
+    }
+
+    // Validação de notas
+    if (notes && notes.length > 500) {
+      Alert.alert('Erro', 'Notas muito longas (máximo 500 caracteres)');
       return;
     }
 
@@ -36,7 +72,7 @@ export function AddItemScreen({ navigation }: any) {
         color,
         brand: brand.trim() || undefined,
         size: size.trim() || undefined,
-        price: price ? parseFloat(price) : undefined,
+        price: parsedPrice,
         season: selectedSeasons,
         notes: notes.trim() || undefined
       });
@@ -48,7 +84,8 @@ export function AddItemScreen({ navigation }: any) {
         }
       ]);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível adicionar o item');
+      const errorMessage = error instanceof Error ? error.message : 'Não foi possível adicionar o item';
+      Alert.alert('Erro', errorMessage);
     }
   };
 

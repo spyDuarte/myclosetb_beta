@@ -211,6 +211,17 @@ export class ClosetService {
   }
 
   /**
+   * Carrega múltiplos itens no closet (usado para restaurar do AsyncStorage)
+   * @param items - Array de itens para carregar
+   */
+  loadItems(items: ClosetItem[]): void {
+    this.items.clear();
+    items.forEach(item => {
+      this.items.set(item.id, item);
+    });
+  }
+
+  /**
    * Retorna a contagem total de itens
    */
   count(): number {
