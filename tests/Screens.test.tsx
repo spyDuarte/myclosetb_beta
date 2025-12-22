@@ -16,13 +16,18 @@ const mockNavigation = {
 
 describe('Telas do Aplicativo - Testes de Integração', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
     (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   describe('HomeScreen', () => {
-    it('deve renderizar loading inicialmente', () => {
+    it('deve renderizar loading inicialmente', async () => {
       const { getByText, getByPlaceholderText } = render(
         <ClosetProvider>
           <HomeScreen navigation={mockNavigation} />
@@ -32,6 +37,9 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
       // Durante o loading, a estrutura da tela deve estar visível
       expect(getByText('Meu Closet')).toBeTruthy();
       expect(getByPlaceholderText('Buscar itens...')).toBeTruthy();
+
+      // Aguardar o fim do efeito para evitar warnings de act()
+      await waitFor(() => {});
     });
 
     it('deve renderizar título "Meu Closet"', async () => {
@@ -313,7 +321,7 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
   });
 
   describe('StatsScreen', () => {
-    it('deve renderizar título "Estatísticas do Closet"', () => {
+    it('deve renderizar título "Estatísticas do Closet"', async () => {
       const { getByText } = render(
         <ClosetProvider>
           <StatsScreen />
@@ -321,9 +329,10 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
       );
 
       expect(getByText('Estatísticas do Closet')).toBeTruthy();
+      await waitFor(() => {});
     });
 
-    it('deve exibir seção "Visão Geral"', () => {
+    it('deve exibir seção "Visão Geral"', async () => {
       const { getByText } = render(
         <ClosetProvider>
           <StatsScreen />
@@ -331,6 +340,7 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
       );
 
       expect(getByText('Visão Geral')).toBeTruthy();
+      await waitFor(() => {});
     });
 
     it('deve exibir estatísticas zeradas quando closet está vazio', async () => {
@@ -486,7 +496,7 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
       });
     });
 
-    it('deve exibir seção "Itens por Categoria"', () => {
+    it('deve exibir seção "Itens por Categoria"', async () => {
       const { getByText } = render(
         <ClosetProvider>
           <StatsScreen />
@@ -494,6 +504,7 @@ describe('Telas do Aplicativo - Testes de Integração', () => {
       );
 
       expect(getByText('Itens por Categoria')).toBeTruthy();
+      await waitFor(() => {});
     });
 
     it('deve exibir contagem de categorias quando há itens', async () => {

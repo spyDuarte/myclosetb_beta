@@ -1,6 +1,5 @@
 module.exports = {
   preset: 'react-native',
-  testEnvironment: 'node',
   roots: ['<rootDir>/tests'],
   testMatch: ['**/*.test.ts', '**/*.test.tsx'],
   transform: {
@@ -18,10 +17,11 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   verbose: true,
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|@react-native-async-storage)/)'
+    'node_modules/(?!(react-native|@react-native|@react-navigation|@react-native-async-storage|uuid)/)'
   ],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^uuid$': '<rootDir>/node_modules/uuid/dist/index.js',
   },
 };
