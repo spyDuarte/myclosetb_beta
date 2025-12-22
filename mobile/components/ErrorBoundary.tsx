@@ -8,6 +8,7 @@ import {
   Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { logError } from '../utils/errorReporting';
 
 interface Props {
   children: ReactNode;
@@ -59,8 +60,10 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo
     });
 
-    // TODO: Enviar para serviço de monitoramento (Sentry, Bugsnag, etc)
-    // Example: logErrorToService(error, errorInfo);
+    // Enviar para serviço de monitoramento (Sentry)
+    logError(error, {
+      componentStack: errorInfo.componentStack
+    });
   }
 
   /**

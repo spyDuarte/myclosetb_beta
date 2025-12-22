@@ -7,11 +7,16 @@ import { StatusBar } from 'expo-status-bar';
 
 import { ErrorBoundary } from './mobile/components/ErrorBoundary';
 import { ClosetProvider } from './mobile/contexts/ClosetContext';
+import { initErrorReporting, routingInstrumentation } from './mobile/utils/errorReporting';
 import { HomeScreen } from './mobile/screens/HomeScreen';
 import { AddItemScreen } from './mobile/screens/AddItemScreen';
 import { EditItemScreen } from './mobile/screens/EditItemScreen';
 import { ItemDetailsScreen } from './mobile/screens/ItemDetailsScreen';
 import { StatsScreen } from './mobile/screens/StatsScreen';
+
+import * as Sentry from '@sentry/react-native';
+
+initErrorReporting();
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -94,11 +99,19 @@ function MainTabs() {
   );
 }
 
-export default function App() {
+function App() {
+  const navigation = React.useRef(null);
+
   return (
     <ErrorBoundary>
       <ClosetProvider>
-        <NavigationContainer>
+        <NavigationContainer
+          ref={navigation}
+          onReady={() => {
+            // Register the navigation container with the instrumentation
+            routingInstrumentation.registerNavigationContainer(navigation);
+          }}
+        >
           <MainTabs />
           <StatusBar style="auto" />
         </NavigationContainer>
@@ -106,3 +119,5 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+
+export default Sentry.wrap(App);
